@@ -18,4 +18,5 @@ backend http_back
 "
 echo "$server_config" >> /etc/haproxy/haproxy.cfg
 
-service haproxy start
+# Restart HAProxy service
+service haproxy restart
