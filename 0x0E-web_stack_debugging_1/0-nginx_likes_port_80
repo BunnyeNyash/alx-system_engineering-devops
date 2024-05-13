@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# debugging nginx port 80
+apt-get -y update
+apt-get -y install nginx
+
+# configure firewall to allow request through port 80
+ufw allow 'Nginx HTTP'
+
+sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
+
+# restart the web server after updating the settings
+service nginx restart
