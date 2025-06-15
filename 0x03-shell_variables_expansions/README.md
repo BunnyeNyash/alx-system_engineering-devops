@@ -1,5 +1,3 @@
-# 0x03-shell_variables_expansions readme file
-
 # 0x03. Shell, init files, variables and expansions
 
 This project contains shell scripts that demonstrate the use of shell variables, expansions, aliases, and other bash features.
