@@ -12,7 +12,7 @@ This project designs web infrastructures for `www.foobar.com`, meeting DevOps/Sy
 - **Description:** Three servers with HAproxy, Nginx, PHP, MySQL (Primary + Replica).
 - **Components:** HAproxy (round-robin), two servers split web/app and database.
 - **Issues:** SPOF (HAproxy, MySQL Primary), no HTTPS, no monitoring.
-- **Diagram:** [Imgur URL for Task 1 to insert later]
+- **Diagram:** [https://imgur.com/a/HKCMbMK]
 
 ## Task 2: Secured and Monitored Web Infrastructure
 - **Description:** Adds firewalls, HTTPS, monitoring clients to Task 1.
