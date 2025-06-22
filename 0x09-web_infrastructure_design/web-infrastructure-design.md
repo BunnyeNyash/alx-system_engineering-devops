@@ -118,3 +118,30 @@
 ---
 
 
+## Task 3: Scale Up
+**Objective:** Scale the infrastructure by adding a server, a second load balancer, and splitting components.
+
+### Diagram Description:
+
+- **Client (User):** Accesses www.foobar.com via HTTPS.
+- **DNS:** Resolves to load balancer cluster IP.
+- **Load Balancer Cluster (2 HAproxy):** Active-active, distributing traffic.
+- **Server 1:** Nginx (web server), monitoring client.
+- **Server 2:** Application server (PHP), codebase, monitoring client.
+- **Server 3:** MySQL (Primary + Replica), monitoring client.
+- **Server 4:** Additional server for redundancy (e.g., second Nginx or PHP).
+- **Firewalls:** On all servers.
+- **SSL:** On load balancer cluster.
+- **Flow:** Clieny → DNS → HAproxy cluster → Nginx → PHP → MySQL → Response.
+
+### Components and Why They’re Added:
+
+- **Additional Server:** Increases capacity and redundancy (e.g., another Nginx or PHP server).
+- **Load Balancer Cluster:** Two HAproxy instances in active-active mode eliminate the load balancer SPOF.
+- **Split Components:**
+  - **Web Server (Nginx):** Handles static content, reducing load on app server.
+  - **Application Server (PHP):** Processes dynamic content, isolated for efficiency.
+  - **Database (MySQL):** Dedicated server for data storage, improving performance.
+- **Why Split:** Isolating components optimizes resource usage, simplifies scaling, and reduces contention.
+
+---
