@@ -6,7 +6,7 @@ This project designs web infrastructures for `www.foobar.com`, meeting DevOps/Sy
 - **Description:** Single server with LAMP stack (Nginx, PHP, MySQL, codebase) at IP `8.8.8.8`.
 - **Components:** DNS (A record), Nginx (web server), PHP (app server), MySQL (database).
 - **Issues:** SPOF (single server), downtime during maintenance, no scalability.
-- **Diagram:** [Imgur URL for Task 0 to insert later]
+- **Diagram:** [https://imgur.com/a/S9GwaGP]
 
 ## Task 1: Distributed Web Infrastructure
 - **Description:** Three servers with HAproxy, Nginx, PHP, MySQL (Primary + Replica).
