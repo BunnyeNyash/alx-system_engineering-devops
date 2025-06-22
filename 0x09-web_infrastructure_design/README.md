@@ -18,7 +18,7 @@ This project designs web infrastructures for `www.foobar.com`, meeting DevOps/Sy
 - **Description:** Adds firewalls, HTTPS, monitoring clients to Task 1.
 - **Components:** Firewalls (filter traffic), SSL (encrypts traffic), Sumologic clients (monitor QPS, errors).
 - **Issues:** SSL termination at HAproxy, single MySQL write node, mixed components.
-- **Diagram:** [Imgur URL for Task 2 to insert later]
+- **Diagram:** [https://imgur.com/a/0fu3d6Q]
 
 ## Task 3: Scale Up
 - **Description:** Adds server, HAproxy cluster, splits web/app/database.
