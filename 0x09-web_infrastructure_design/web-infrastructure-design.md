@@ -32,3 +32,51 @@
 ---
 
 
+## Task 1: Distributed Web Infrastructure
+**Objective:** Design a three-server web infrastructure for www.foobar.com with a load balancer, addressing additional components and issues.
+
+### Diagram Description:
+
+- **Client (User):** Accesses www.foobar.com.
+- **DNS:** Resolves to the load balancer’s IP (e.g., 8.8.8.8, A record).
+- **Load Balancer (HAproxy):** Distributes traffic to two servers.
+- **Server 1:**
+  - Runs Nginx (web server).
+  - Runs PHP application server.
+  - Hosts application files.
+- **Server 2:**
+  - Runs MySQL (Primary node for writes).
+  - Replica node (read-only) for redundancy.
+- **Flow:** Client → DNS → HAproxy → Server 1 (Nginx → PHP) → Server 2 (MySQL) → Response.
+
+### Components and Why They’re Added:
+
+- **Load Balancer (HAproxy):** Distributes traffic across servers to improve scalability and reliability. Configured with round-robin algorithm, which cycles requests to each server evenly.
+- **Two Servers:** Splitting web/app and database reduces load on a single server and mitigates SPOF.
+- **Application Files:** Stored on Server 1 to serve dynamic content via PHP.
+- **MySQL Primary-Replica Cluster:**
+  - *Primary Node (Server 2):* Handles write operations (e.g., updating user data).
+  - *Replica Node (Server 2 or another server):* Syncs with Primary for read operations, providing redundancy and read scalability.
+- **Primary vs. Replica:** Primary accepts writes and syncs data to Replica; Replica handles reads, reducing Primary’s load.
+
+### Load Balancer Setup:
+
+- **Algorithm:** Round-robin, distributing requests sequentially to each server.
+- **Active-Active vs. Active-Passive:**
+  - *Active-Active:* Both servers handle traffic simultaneously (used here for load balancing).
+  - *Active-Passive:* One server is active, the other is a standby (not used here).
+- **Why Active-Active:** Increases capacity and redundancy; both servers process requests, reducing the risk of overload.
+
+### Issues with This Infrastructure:
+
+- **SPOF:**
+  - Load balancer is a SPOF; if it fails, traffic cannot reach servers.
+  - Primary MySQL node is a SPOF for writes; if it fails, writes stop.
+- **Security Issues:**
+  - No firewalls, leaving servers vulnerable to attacks (e.g., DDoS).
+  - No HTTPS, so traffic is unencrypted, risking data interception.
+- **No Monitoring:** No tools to track performance, errors, or uptime, making issue detection difficult.
+
+---
+
+
