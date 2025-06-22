@@ -24,7 +24,7 @@ This project designs web infrastructures for `www.foobar.com`, meeting DevOps/Sy
 - **Description:** Adds server, HAproxy cluster, splits web/app/database.
 - **Components:** Two HAproxy (active-active), four servers (Nginx, PHP, MySQL, extra server).
 - **Why split:** Optimizes performance, eliminates SPOF.
-- **Diagram:** [Imgur URL for Task 3 to insert later]
+- **Diagram:** [https://imgur.com/a/DcXZZgG]
 
 ## Repository
 - GitHub: `alx-system_engineering-devops`
