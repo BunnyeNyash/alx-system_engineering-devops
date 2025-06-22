@@ -80,3 +80,41 @@
 ---
 
 
+## Task 2: Secured and Monitored Web Infrastructure
+**Objective:** Enhance the three-server infrastructure with security (firewalls, HTTPS) and monitoring.
+
+### Diagram Description:
+
+- **Client (User):** Accesses www.foobar.com via HTTPS.
+- **DNS:** Resolves to load balancer’s IP (A record).
+- **Load Balancer (HAproxy):** Distributes traffic, terminates SSL.
+- **Server 1:** Nginx, PHP, codebase, monitoring client.
+- **Server 2:** MySQL (Primary + Replica), monitoring client.
+- **Firewalls:** One per server (including load balancer) to filter traffic.
+- **SSL Certificate:** Installed on HAproxy for HTTPS.
+- **Monitoring Clients:** Collect data for a tool like Sumologic.
+- **Flow:** Client → DNS → HAproxy (HTTPS) → Server 1 (Nginx → PHP) → Server 2 (MySQL) → Response.
+
+### Components and Why They’re Added:
+
+- **Firewalls:** Protect servers by filtering traffic, allowing only specific ports (e.g., 80, 443) and blocking malicious requests.
+- **SSL Certificate:** Enables HTTPS, encrypting traffic between user and load balancer for security.
+- **Monitoring Clients:** Collect metrics (e.g., CPU, memory, QPS) for tools like Sumologic to track performance and detect issues.
+
+### Specifics:
+
+- **Firewalls:** Block unauthorized access (e.g., only allow HTTP/443, MySQL/3306 between servers).
+- **HTTPS:** Ensures data privacy and integrity; users trust secure sites.
+- **Monitoring Purpose:** Tracks system health, alerts on issues (e.g., high QPS, errors).
+- **Monitoring Data Collection:** Clients (e.g., Sumologic agents) gather logs, metrics (CPU, memory, QPS), and send them to a central dashboard.
+- **Monitoring QPS:** Configure monitoring tool to track HTTP requests per second on Nginx (e.g., via access logs or NewRelic).
+
+### Issues with This Infrastructure:
+
+- **SSL Termination at Load Balancer:** Terminating SSL at HAproxy means traffic between HAproxy and servers is unencrypted, risking internal data exposure.
+- **Single MySQL Write Node:** Only the Primary node accepts writes, a SPOF for write operations.
+- **Same Components on Servers:** Having web server, app server, and database on similar servers (if not fully split) can lead to resource contention or complexity.
+
+---
+
+
