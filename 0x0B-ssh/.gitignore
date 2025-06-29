@@ -1,4 +1,4 @@
-# for the .env file
+# for the .env file and the RSA key files
 # Virtual environment
 myenv/
 venv/
@@ -9,6 +9,9 @@ ENV/
 # Environment variables
 .env
 
+# RSA key pairs (private and public)
+school.pub
+school
 # IDEs and text editors
 .vscode/
 .idea/
@@ -20,4 +23,3 @@ Thumbs.db
 # Static and media files
 staticfiles/
 media/
-.env
