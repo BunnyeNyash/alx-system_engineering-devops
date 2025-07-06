@@ -1,39 +1,19 @@
 #!/usr/bin/env bash
-# Configures a new Ubuntu machine to add a custom Nginx response header X-Served-By with the server hostname
+# Configures Nginx on a new Ubuntu 16.04 server to add X-Served-By header, 404 page, and redirect
 
 # Update package list and install Nginx
-apt-get update -y
-apt-get install -y nginx
+sudo apt-get update
+sudo apt-get install -y nginx
 
-# Get the hostname of the server
-HOSTNAME=$(hostname)
+# Create web root and files
+sudo mkdir -p /var/www/html
+sudo chmod -R 755 /var/www
+sudo sh -c "echo 'Hello World!' > /var/www/html/index.html"
+sudo sh -c "echo 'Ceci n\'est pas une page' > /var/www/html/404.html"
 
-# Configure Nginx with custom header
-cat > /etc/nginx/sites-available/default <<EOF
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name _;
-    add_header X-Served-By $HOSTNAME;
-    root /var/www/html;
-    index index.html;
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}
-EOF
-
-# Create web root and index page
-mkdir -p /var/www/html
-echo "Hello World!" > /var/www/html/index.html
-
-# Set appropriate permissions
-chown -R www-data:www-data /var/www/html
-chmod -R 755 /var/www/html
-chmod 644 /var/www/html/index.html
-
-# Ensure sites-enabled symlink
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+# Configure Nginx with X-Served-By header, 404 page, and redirect
+sudo sed -i "s|server_name _;|server_name _;\n\tadd_header X-Served-By $(hostname);\n\trewrite ^/redirect_me https://www.bunnyenyash.com permanent;|" /etc/nginx/sites-enabled/default
+sudo sed -i "s|listen 80 default_server;|listen 80 default_server;\n\terror_page 404 /404.html;\n\tlocation = /404.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t}|" /etc/nginx/sites-enabled/default
 
 # restart the web server after updating the settings
-service nginx restart
+sudo service nginx restart
