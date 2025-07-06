@@ -8,29 +8,8 @@ apt-get install -y nginx
 # Get the hostname of the server
 HOSTNAME=$(hostname)
 
-# Configure Nginx to add the custom header
-NGINX_CONF="/etc/nginx/sites-available/default"
-if [ -f "$NGINX_CONF" ]; then
-    # Backup the default configuration
-    cp "$NGINX_CONF" "$NGINX_CONF.bak"
-    
-    # Add or update the X-Served-By header in the default server block
-    if grep -q "add_header X-Served-By" "$NGINX_CONF"; then
-        # If header exists, update it
-        sed -i "s|add_header X-Served-By .*;|add_header X-Served-By $HOSTNAME;|" "$NGINX_CONF"
-    else
-        # If header doesn't exist, add it after server_name or in the server block
-        if grep -q "server_name _;" "$NGINX_CONF"; then
-            sed -i "/server_name _;/a \        add_header X-Served-By $HOSTNAME;" "$NGINX_CONF"
-        else
-            # If server_name _; is not found, append to the first server block
-            sed -i "/server {/a \        add_header X-Served-By $HOSTNAME;" "$NGINX_CONF"
-        fi
-    fi
-else
-    # Create a new default configuration if it doesn't exist
-    mkdir -p /etc/nginx/sites-available
-    cat > "$NGINX_CONF" <<EOF
+# Configure Nginx with custom header
+cat > /etc/nginx/sites-available/default <<EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -43,12 +22,6 @@ server {
     }
 }
 EOF
-fi
-
-# Ensure sites-enabled symlink exists
-if [ ! -L /etc/nginx/sites-enabled/default ]; then
-    ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-fi
 
 # Create web root and index page
 mkdir -p /var/www/html
@@ -59,14 +32,8 @@ chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 chmod 644 /var/www/html/index.html
 
-# Ensure Nginx is running and enabled
-service nginx start
-update-rc.d nginx enable
+# Ensure sites-enabled symlink
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Verify and reload Nginx configuration
-if nginx -t; then
-    service nginx reload
-else
-    echo "Nginx configuration test failed"
-    exit 1
-fi
+# restart the web server after updating the settings
+service nginx restart
