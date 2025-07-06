@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install nginx server
+# Installs and configures Nginx on an Ubuntu server to serve "Hello World!" on port 80
 
 # Update the package list
 apt-get update
