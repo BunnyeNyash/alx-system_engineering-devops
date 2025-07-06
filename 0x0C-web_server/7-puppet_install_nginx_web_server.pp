@@ -1,42 +1,25 @@
-# Installs and configures Nginx using Puppet to serve "Hello World!" and redirect /redirect_me
+# Script to install nginx using puppet
 
-package { 'nginx':
-  ensure => installed,
+package {'nginx':
+  ensure => 'present',
 }
 
-file { '/var/www/html/index.html':
-  content => 'Hello World!',
-  ensure  => file,
+exec {'install':
+  command  => 'sudo apt-get update ; sudo apt-get -y install nginx',
+  provider => shell,
+
 }
 
-file { '/etc/nginx/sites-enabled/default':
-  ensure  => file,
-  content => template('nginx/default.erb'),
-  require => Package['nginx'],
-  notify  => Service['nginx'],
+exec {'Hello':
+  command  => 'echo "Hello World!" | sudo tee /var/www/html/index.html',
+  provider => shell,
 }
 
-file { '/etc/nginx/templates/default.erb':
-  ensure  => file,
-  content => @("END")
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html;
-    server_name _;
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}
-| END
+exec {'sudo sed -i "s/listen 80 default_server;/listen 80 default_server;\\n\\tlocation \/redirect_me {\\n\\t\\treturn 301 https:\/\/www.youtube.com\/watch\?v=QH2-TGUlwu4;\\n\\t}/" /etc/nginx/sites-available/default':
+  provider => shell,
 }
 
-service { 'nginx':
-  ensure  => running,
-  enable  => true,
-  require => Package['nginx'],
+exec {'run':
+  command  => 'sudo service nginx restart',
+  provider => shell,
 }
