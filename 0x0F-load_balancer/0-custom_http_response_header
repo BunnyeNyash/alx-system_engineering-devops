@@ -1,10 +1,45 @@
 #!/usr/bin/env bash
 # Configures a new Ubuntu server with a custom HTTP header response
+# Update package list and install Nginx
 apt-get -y update
 apt-get -y install nginx
 
 # configure firewall to allow request through port 80
 ufw allow 'Nginx HTTP'
+
+# Get the hostname of the server
+HOSTNAME=$(hostname)
+
+# Configure Nginx to add the custom header
+NGINX_CONF="/etc/nginx/sites-available/default"
+if [ -f "$NGINX_CONF" ]; then
+    # Backup the default configuration
+    cp "$NGINX_CONF" "$NGINX_CONF.bak"
+    
+    # Add or update the X-Served-By header in the default server block
+    if grep -q "add_header X-Served-By" "$NGINX_CONF"; then
+        # If header exists, update it
+        sed -i "s|add_header X-Served-By .*;|add_header X-Served-By $HOSTNAME;|" "$NGINX_CONF"
+    else
+        # If header doesn't exist, add it to the server block
+        sed -i "/server_name _;/a \        add_header X-Served-By $HOSTNAME;" "$NGINX_CONF"
+    fi
+else
+    # Create a new default configuration if it doesn't exist
+    cat > "$NGINX_CONF" <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    add_header X-Served-By $HOSTNAME;
+    root /var/www/html;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+fi
 
 mkdir -p /var/www/html
 
@@ -12,10 +47,7 @@ mkdir -p /var/www/html
 chmod -R 755 /var/www
 
 #  create the index page
-echo 'Hello World!' > /var/www/html/index.nginx-debian.html
-
-# code to configure redirect for 404 error page
-sed -i '/listen 80 default_server;/a add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
+echo "Hello World!" > /var/www/html/index.html
 
 # restart the web server after updating the settings
 service nginx restart
