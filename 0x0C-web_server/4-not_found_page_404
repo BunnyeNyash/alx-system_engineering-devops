@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Configures Nginx on an Ubuntu server to return a custom 404 page
+
+set -e
+
+# Update package list and install Nginx
+apt-get update -y
+apt-get install nginx -y
+
+# Create pages
+echo "Hello World!" > /var/www/html/index.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+# Add custom 404 error handling to Nginx config
+sed -i '/server_name _;/a \ \n
+    error_page 404 /404.html;\n
+    location /redirect_me {\n
+         return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n
+    }' /etc/nginx/sites-enabled/default
+
+# Start nginx using service (not systemctl)
+service nginx restart
