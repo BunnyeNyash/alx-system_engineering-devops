@@ -7,16 +7,15 @@ set -e
 apt-get update -y
 apt-get install nginx -y
 
-# Create pages
-echo "Hello World!" > /var/www/html/index.html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
+# code to redirect a specific endpoint (eg: redirect /redirect_me to https://www.youtube.com/watch?v=QH2-TGUlwu4)
+echo "Hello World!" | sudo tee /var/www/html/index.html
+string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/www.youtube.com\/watch\?v=QH2-TGUlwu4 permanent;"
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
 
-# Add custom 404 error handling to Nginx config
-sed -i '/server_name _;/a \ \n
-    error_page 404 /404.html;\n
-    location /redirect_me {\n
-         return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n
-    }' /etc/nginx/sites-enabled/default
+# code to create error page and add a redirect for error 404
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+string_for_replacement="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/listen 80 default_server;/$string_for_replacement/" /etc/nginx/sites-enabled/default
 
 # Start nginx using service (not systemctl)
-service nginx restart
+sudo service nginx restart
